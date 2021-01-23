@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hw-20</title>
+    <style>
+        .rect-wrapper {
+            width: 600px;
+            margin-top: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .rect {
+            box-sizing: border-box;
+            width: 100px;
+            height: 100px;
+            padding: 5px;
+            border: 3px solid;
+            font-size: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .blue {
+            background-color: slateblue;
+        }
+        .green {
+            background-color: limegreen;
+        }
+        .yellow {
+            background-color: goldenrod;
+        }
+        .buttons-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+        button {
+            padding: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+    <script>
+        
+        $(function(){
+            // ообёртка для квадратов
+            const $rects = $('<div>', {class: 'rect-wrapper'});
+            $rects.prependTo('body');
+            // добавляем в обёртку квадраты, и в каждый квадрат обёртку для кнопок
+            for (let i = 0; i < 5; i++) {
+                const newRect = $('<div>', {
+                    class: 'rect', 
+                    'data-count': 0,
+                });
+                console.log(newRect);
+                $('<div>', {class: 'value'}).text(newRect.attr('data-count')).prependTo(newRect);
+                $('<div>', {class: 'buttons-wrapper'}).appendTo(newRect);
+                newRect.appendTo($rects);
+            }
+            // в каждую обёртку для кнопок добавляем кнопки
+            makeButtons('.buttons-wrapper', '+');
+            makeButtons('.buttons-wrapper', '-');
+            // событие на обертку для квадратов и проверка - был ли клик по квадрату
+            // если да, то поменять цвет и переместить в конец
+            $rects.on('click', event => {
+                if ($(event.target).hasClass('rect')) {
+                    const rect = $(event.target);
+                    changeColor(rect);
+                    rect.appendTo($rects);
+                }
+            });
+            // кнопки
+            $('button').on('click', function () {
+                const button = $(this);
+                const rect = button.closest('.rect');
+                let counter = rect.attr('data-count');
+                if (button.attr('value') === '+') {
+                    counter++;
+                    rect.attr('data-count', counter);
+                } else if (button.attr('value') === '-') {
+                    counter > 0 ? counter-- : counter;
+                    rect.attr('data-count', counter);
+                }
+                rect.children('.value').text(counter);
+            })
+            // функции 
+            function changeColor (rect) {
+                if (rect.hasClass('yellow')) {
+                    rect.removeClass('yellow');
+                    return rect.addClass('blue');
+                } else if (rect.hasClass('blue')) {
+                    rect.removeClass('blue');
+                    return rect.addClass('green');
+                } else if (rect.hasClass('green')) {
+                    rect.removeClass('green');
+                    return rect.addClass('yellow');
+                } else {
+                    return rect.addClass('blue');
+                }
+            }
+            function makeButtons (addTo, action) {
+                $('<button>', {
+                    type: 'button', 
+                    value: action,
+                }).text(action).appendTo(addTo);
+            }
+        })
+    </script>
+</body>
+</html>
